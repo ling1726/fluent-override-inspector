@@ -50,6 +50,9 @@ document.addEventListener('DOMContentLoaded', function () {
     scanButton.disabled = true;
     showStatus('Scanning for Griffel elements...', 'info');
 
+    // Clear highlighted state
+    chrome.storage.local.set({ highlightedElementIndex: null });
+
     // Get the active tab
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       console.log('Active tab:', tabs[0]);
@@ -64,6 +67,10 @@ document.addEventListener('DOMContentLoaded', function () {
       const excludeFilter = excludeFilterInput.value.trim();
 
       console.log('Sending message to content script with filters:', { sourceFilter, excludeFilter });
+
+      chrome.tabs.sendMessage(activeTab.id, {
+        action: 'clearAllHighlights'
+      });
 
       // Send message to content script
       chrome.tabs.sendMessage(activeTab.id, {
@@ -82,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (response && response.elements) {
           console.log('Found elements:', response.elements);
-          displayGriffelElements(response.elements);
+          displayGriffelElements(response.elements); // No highlightedIndex passed, so all buttons will be "Highlight"
           chrome.storage.local.set({
             currentPageGriffelElements: response.elements,
             lastScan: new Date().toISOString()

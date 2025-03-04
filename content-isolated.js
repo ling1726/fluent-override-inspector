@@ -72,6 +72,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }, '*');
     sendResponse({ success: true });
     return true;
+  } else if (request.action === 'clearAllHighlights') {
+    // Forward the clear all highlights request to the main world content script
+    window.postMessage({
+      type: 'GRIFFEL_INSPECTOR_REQUEST',
+      data: { action: 'clearAllHighlights' }
+    }, '*');
   }
 });
 

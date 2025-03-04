@@ -290,6 +290,20 @@ function highlightElement(elementIndex) {
   return true;
 }
 
+function clearAllHighlights() {
+  document.querySelectorAll('[data-griffel-highlight]').forEach((el) => {
+    el.removeAttribute('data-griffel-highlight');
+  });
+  document.querySelectorAll('[data-griffel-highlight-all]').forEach((el) => {
+    el.removeAttribute('data-griffel-highlight-all');
+  });
+  document.querySelectorAll('[data-griffel-label]').forEach((el) => {
+    el.removeAttribute('data-griffel-label');
+  });
+  highlightedElements.clear();
+  isHighlightAllActive = false;
+}
+
 // Listen for messages from the isolated world
 window.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'GRIFFEL_INSPECTOR_REQUEST') {
@@ -316,6 +330,8 @@ window.addEventListener('message', (event) => {
           type: 'GRIFFEL_INSPECTOR_RESPONSE',
           data: { success, isHighlighted: !success }
         }, '*');
+      } else if (action === 'clearAllHighlights') {
+        clearAllHighlights();
       }
     } catch (error) {
       console.error('Error handling Griffel inspector request:', error);
