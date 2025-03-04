@@ -1,6 +1,6 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   console.log('Popup DOM loaded');
-  
+
   const scanButton = document.getElementById('scanGriffel');
   const highlightButton = document.getElementById('highlightGriffel');
   const sourceFilterInput = document.getElementById('sourceFilter');
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const griffelListDiv = document.getElementById('griffelList');
 
   // Load existing scan results if available
-  chrome.storage.local.get(['currentPageGriffelElements', 'lastScan'], function(data) {
+  chrome.storage.local.get(['currentPageGriffelElements', 'lastScan'], function (data) {
     console.log('Loaded storage data:', data);
     if (data.currentPageGriffelElements) {
       displayGriffelElements(data.currentPageGriffelElements);
@@ -20,13 +20,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  scanButton.addEventListener('click', function() {
+  scanButton.addEventListener('click', function () {
     console.log('Scan button clicked');
     scanButton.disabled = true;
     showStatus('Scanning for Griffel elements...', 'info');
-    
+
     // Get the active tab
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       console.log('Active tab:', tabs[0]);
       if (!tabs[0]) {
         showStatus('No active tab found', 'error');
@@ -37,18 +37,18 @@ document.addEventListener('DOMContentLoaded', function() {
       const activeTab = tabs[0];
       const sourceFilter = sourceFilterInput.value.trim();
       const excludeFilter = excludeFilterInput.value.trim();
-      
+
       console.log('Sending message to content script with filters:', { sourceFilter, excludeFilter });
-      
+
       // Send message to content script
       chrome.tabs.sendMessage(activeTab.id, {
         action: 'findGriffelElements',
         sourceFilter: sourceFilter,
         excludeFilter: excludeFilter
-      }, function(response) {
+      }, function (response) {
         console.log('Received response from content script:', response);
         scanButton.disabled = false;
-        
+
         if (chrome.runtime.lastError) {
           console.error('Chrome runtime error:', chrome.runtime.lastError);
           showStatus('Error: Could not connect to the page. Make sure you are on a valid webpage.', 'error');
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (response && response.elements) {
           console.log('Found elements:', response.elements);
           displayGriffelElements(response.elements);
-          chrome.storage.local.set({ 
+          chrome.storage.local.set({
             currentPageGriffelElements: response.elements,
             lastScan: new Date().toISOString()
           });
@@ -75,15 +75,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  highlightButton.addEventListener('click', function() {
+  highlightButton.addEventListener('click', function () {
     highlightButton.disabled = true;
     showStatus('Highlighting Griffel elements...', 'info');
-    
+
     // Toggle button text immediately
     highlightButton.textContent = highlightButton.textContent === 'Highlight All' ? 'Unhighlight All' : 'Highlight All';
-    
+
     // Get the active tab
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       if (!tabs[0]) {
         showStatus('No active tab found', 'error');
         highlightButton.disabled = false;
@@ -93,15 +93,15 @@ document.addEventListener('DOMContentLoaded', function() {
       const activeTab = tabs[0];
       const sourceFilter = sourceFilterInput.value.trim();
       const excludeFilter = excludeFilterInput.value.trim();
-      
+
       // Send message to content script
       chrome.tabs.sendMessage(activeTab.id, {
         action: 'highlightGriffelElements',
         sourceFilter: sourceFilter,
         excludeFilter: excludeFilter
-      }, function(response) {
+      }, function (response) {
         highlightButton.disabled = false;
-        
+
         if (chrome.runtime.lastError) {
           showStatus('Error: Could not connect to the page. Make sure you are on a valid webpage.', 'error');
           return;
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function displayGriffelElements(elements) {
     console.log('Displaying elements:', elements);
     griffelListDiv.innerHTML = '';
-    
+
     if (!elements || elements.length === 0) {
       griffelListDiv.innerHTML = '<div class="griffel-item">No Griffel elements found on this page</div>';
       return;
@@ -148,13 +148,13 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log(`Processing element ${index + 1}:`, element);
       const itemDiv = document.createElement('div');
       itemDiv.className = 'griffel-item';
-      
+
       const elementInfo = document.createElement('div');
       elementInfo.textContent = `Element ${index + 1}: ${element.element.tagName.toLowerCase()}`;
       if (element.element.id) {
         elementInfo.textContent += ` (ID: ${element.element.id})`;
       }
-      
+
       // Add highlight button
       const highlightButton = document.createElement('button');
       highlightButton.textContent = 'Highlight';
@@ -166,21 +166,21 @@ document.addEventListener('DOMContentLoaded', function() {
       highlightButton.style.border = '1px solid #bbdefb';
       highlightButton.style.borderRadius = '4px';
       highlightButton.style.color = '#1565c0';
-      
+
       // Add this button to our array
       highlightButtons.push(highlightButton);
-      
+
       // Generate a unique color for this element using golden ratio
       const hue = (index * 137.5) % 360;
       const color = `hsl(${hue}, 70%, 80%)`;
-      
-      highlightButton.addEventListener('click', function() {
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+
+      highlightButton.addEventListener('click', function () {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
           if (!tabs[0]) return;
-          
+
           // Toggle button text immediately
           highlightButton.textContent = highlightButton.textContent === 'Highlight' ? 'Unhighlight' : 'Highlight';
-          
+
           // If this button is being highlighted, untoggle all other buttons
           if (highlightButton.textContent === 'Unhighlight') {
             highlightButtons.forEach(btn => {
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
               }
             });
           }
-          
+
           // Send message to content script through the isolated world
           chrome.tabs.sendMessage(tabs[0].id, {
             type: 'GRIFFEL_INSPECTOR_REQUEST',
@@ -199,12 +199,12 @@ document.addEventListener('DOMContentLoaded', function() {
           });
         });
       });
-      
+
       elementInfo.appendChild(highlightButton);
-      
+
       const attributesDiv = document.createElement('div');
       attributesDiv.className = 'griffel-attributes';
-      
+
       // Display Griffel-specific attributes
       const attributes = [];
       if (element.attributes.class) {
@@ -215,9 +215,9 @@ document.addEventListener('DOMContentLoaded', function() {
           .map(attr => `${attr.name}: ${attr.value}`)
           .join(', '));
       }
-      
+
       attributesDiv.textContent = attributes.join(' | ');
-      
+
       // Display Griffel info
       const infoDiv = document.createElement('div');
       infoDiv.className = 'griffel-info';
@@ -225,59 +225,90 @@ document.addEventListener('DOMContentLoaded', function() {
       infoDiv.style.padding = '8px';
       infoDiv.style.backgroundColor = '#f5f5f5';
       infoDiv.style.borderRadius = '4px';
-      
-      if (element.info && element.info.rules && typeof element.info.rules === 'object') {
-        console.log(`Element ${index + 1} rules:`, element.info.rules);
-        const rulesDiv = document.createElement('div');
-        rulesDiv.className = 'griffel-rules';
-        rulesDiv.style.marginTop = '8px';
-        rulesDiv.style.padding = '8px';
-        rulesDiv.style.backgroundColor = '#e3f2fd';
-        rulesDiv.style.borderRadius = '4px';
-        rulesDiv.style.border = '1px solid #bbdefb';
 
-        const rulesList = document.createElement('ul');
-        rulesList.style.margin = '0';
-        rulesList.style.paddingLeft = '20px';
+      // Function to flatten sequences into a list
+      function flattenSequences(sequence) {
+        if (!sequence) return [];
 
-        // Handle rules as an object of className -> cssRule
-        Object.entries(element.info.rules).forEach(([className, cssRule]) => {
-          console.log(`Element ${index + 1} rule for class ${className}:`, cssRule);
-          const ruleItem = document.createElement('li');
-          ruleItem.style.marginBottom = '8px';
+        const sequences = [];
 
-          // Parse CSS rule into property-value pairs
-          const cssRuleInfo = document.createElement('div');
-          cssRuleInfo.style.fontFamily = 'monospace';
-          cssRuleInfo.style.whiteSpace = 'pre-wrap';
-          cssRuleInfo.style.marginTop = '4px';
-          cssRuleInfo.style.fontSize = '0.9em';
+        // Add current sequence
+        sequences.push(sequence);
 
-          // Remove CSS selector and curly braces, then split by semicolons
-          const properties = cssRule
-            .replace(/^[^{]*{/, '') // Remove everything before the first {
-            .replace(/[{}]/g, '')   // Remove curly braces
-            .split(';')
-            .filter(prop => prop.trim());
-          
-          // Create a formatted list of property-value pairs
-          const formattedProperties = properties.map(prop => {
-            const [property, value] = prop.split(':').map(s => s.trim());
-            return `${property}: ${value}`;
-          }).join('\n');
+        // Add all child sequences
+        if (sequence.children && sequence.children.length > 0) {
+          sequence.children.forEach(child => {
+            sequences.push(...flattenSequences(child));
+          });
+        }
 
-          cssRuleInfo.textContent = formattedProperties;
-          ruleItem.appendChild(cssRuleInfo);
-          rulesList.appendChild(ruleItem);
-        });
-
-        rulesDiv.appendChild(rulesList);
-        infoDiv.appendChild(rulesDiv);
-      } else {
-        console.log(`Element ${index + 1} has no rules`);
-        infoDiv.textContent = 'No Griffel rules found';
+        return sequences;
       }
-      
+
+      // Display all sequences in a flat list
+      if (element.info) {
+        const sequences = flattenSequences(element.info);
+
+        sequences.filter(sequence => sequence.rules && Object.keys(sequence.rules).length > 0).forEach((sequence, seqIndex) => {
+          const sequenceDiv = document.createElement('div');
+          sequenceDiv.style.marginBottom = '8px';
+          sequenceDiv.style.padding = '8px';
+          sequenceDiv.style.backgroundColor = '#e3f2fd';
+          sequenceDiv.style.borderRadius = '4px';
+          sequenceDiv.style.border = '1px solid #bbdefb';
+
+          // Display rules if this sequence has them
+          if (sequence.rules && Object.keys(sequence.rules).length > 0) {
+            const rulesDiv = document.createElement('div');
+            rulesDiv.style.marginTop = '8px';
+            rulesDiv.style.padding = '8px';
+            rulesDiv.style.backgroundColor = '#fff';
+            rulesDiv.style.borderRadius = '4px';
+            rulesDiv.style.border = '1px solid #e0e0e0';
+
+            const rulesList = document.createElement('ul');
+            rulesList.style.margin = '0';
+            rulesList.style.paddingLeft = '20px';
+
+            Object.entries(sequence.rules).filter(rules => rules.length).forEach(([className, cssRule]) => {
+              const ruleItem = document.createElement('li');
+              ruleItem.style.marginBottom = '8px';
+
+              // Parse CSS rule into property-value pairs
+              const cssRuleInfo = document.createElement('div');
+              cssRuleInfo.style.fontFamily = 'monospace';
+              cssRuleInfo.style.whiteSpace = 'pre-wrap';
+              cssRuleInfo.style.marginTop = '4px';
+              cssRuleInfo.style.fontSize = '0.9em';
+
+              // Remove CSS selector and curly braces, then split by semicolons
+              const properties = cssRule
+                .replace(/^[^{]*{/, '') // Remove everything before the first {
+                .replace(/[{}]/g, '')   // Remove curly braces
+                .split(';')
+                .filter(prop => prop.trim());
+
+              // Create a formatted list of property-value pairs
+              const formattedProperties = properties.map(prop => {
+                const [property, value] = prop.split(':').map(s => s.trim());
+                return `${property}: ${value}`;
+              }).join('\n');
+
+              cssRuleInfo.textContent = formattedProperties;
+              ruleItem.appendChild(cssRuleInfo);
+              rulesList.appendChild(ruleItem);
+            });
+
+            rulesDiv.appendChild(rulesList);
+            sequenceDiv.appendChild(rulesDiv);
+          }
+
+          infoDiv.appendChild(sequenceDiv);
+        });
+      } else {
+        infoDiv.textContent = 'No Griffel info found';
+      }
+
       itemDiv.appendChild(elementInfo);
       itemDiv.appendChild(attributesDiv);
       itemDiv.appendChild(infoDiv);

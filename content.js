@@ -59,6 +59,27 @@ function hasMatchingSourceURL(sequence, sourceFilter, excludeFilter) {
   return true;
 }
 
+// Function to collect rules from sequences
+function collectRulesFromSequences(sequence) {
+  if (!sequence) return {};
+  
+  const rules = {};
+  
+  // Add rules from current sequence if it's a leaf node
+  if (sequence.rules) {
+    Object.assign(rules, sequence.rules);
+  }
+  
+  // Collect rules from children
+  if (sequence.children) {
+    sequence.children.forEach(child => {
+      Object.assign(rules, collectRulesFromSequences(child));
+    });
+  }
+  
+  return rules;
+}
+
 // Function to find Griffel elements
 function findGriffelElements(sourceFilter, excludeFilter) {
   try {
@@ -88,6 +109,9 @@ function findGriffelElements(sourceFilter, excludeFilter) {
           const hasMatchingSource = hasMatchingSourceURL(info, sourceFilter, excludeFilter);
           
           if (hasMatchingSource) {
+            // Collect all rules from the sequence tree
+            info.rules = collectRulesFromSequences(info.sequences);
+            
             // Add a data attribute to identify this element
             const index = griffelElements.length;
             element.setAttribute('data-griffel-index', index.toString());
