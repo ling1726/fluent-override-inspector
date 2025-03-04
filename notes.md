@@ -5,3 +5,4 @@
 - didn't understand the need to exclude first
 - issue where the filter wasn't being passed between environments, it was working first and then didn't
 - had to intervene for filtering logic, couldn't understand the recursive matching didn't handle the case where there was not source url to match against
+- I had to really make sure to regularly ask the agent to check the codebase to infer types

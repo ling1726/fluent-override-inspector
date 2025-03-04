@@ -9,15 +9,40 @@ document.addEventListener('DOMContentLoaded', function () {
   const scanInfoDiv = document.getElementById('scanInfo');
   const griffelListDiv = document.getElementById('griffelList');
 
-  // Load existing scan results if available
-  chrome.storage.local.get(['currentPageGriffelElements', 'lastScan'], function (data) {
+  // Load existing data
+  chrome.storage.local.get([
+    'currentPageGriffelElements',
+    'lastScan',
+    'sourceFilter',
+    'excludeFilter',
+    'highlightedElementIndex'
+  ], function (data) {
     console.log('Loaded storage data:', data);
+    
+    // Restore filter values
+    if (data.sourceFilter) {
+      sourceFilterInput.value = data.sourceFilter;
+    }
+    if (data.excludeFilter) {
+      excludeFilterInput.value = data.excludeFilter;
+    }
+    
+    // Restore scan results
     if (data.currentPageGriffelElements) {
-      displayGriffelElements(data.currentPageGriffelElements);
+      displayGriffelElements(data.currentPageGriffelElements, data.highlightedElementIndex);
       if (data.lastScan) {
         scanInfoDiv.textContent = `Last scan: ${new Date(data.lastScan).toLocaleString()}`;
       }
     }
+  });
+
+  // Save filter values when they change
+  sourceFilterInput.addEventListener('input', function() {
+    chrome.storage.local.set({ sourceFilter: sourceFilterInput.value });
+  });
+
+  excludeFilterInput.addEventListener('input', function() {
+    chrome.storage.local.set({ excludeFilter: excludeFilterInput.value });
   });
 
   scanButton.addEventListener('click', function () {
@@ -132,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
     statusDiv.className = type;
   }
 
-  function displayGriffelElements(elements) {
+  function displayGriffelElements(elements, highlightedIndex = null) {
     console.log('Displaying elements:', elements);
     griffelListDiv.innerHTML = '';
 
@@ -157,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Add highlight button
       const highlightButton = document.createElement('button');
-      highlightButton.textContent = 'Highlight';
+      highlightButton.textContent = highlightedIndex === index ? 'Unhighlight' : 'Highlight';
       highlightButton.style.marginLeft = '8px';
       highlightButton.style.padding = '2px 8px';
       highlightButton.style.fontSize = '0.8em';
@@ -188,6 +213,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 btn.textContent = 'Highlight';
               }
             });
+            // Save the highlighted index
+            chrome.storage.local.set({ highlightedElementIndex: index });
+          } else {
+            // Clear the highlighted index
+            chrome.storage.local.set({ highlightedElementIndex: null });
           }
 
           // Send message to content script through the isolated world
@@ -217,7 +247,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       attributesDiv.textContent = attributes.join(' | ');
-
 
       itemDiv.appendChild(elementInfo);
       itemDiv.appendChild(attributesDiv);
