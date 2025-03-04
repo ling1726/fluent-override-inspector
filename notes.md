@@ -1,0 +1,7 @@
+- Great boilerplate generate to get initial working extension
+- Took 30min to get the isolated/main context working, had to research myself how to do this
+- cloned the griffel repo to figure out what structure the debug info was
+- highlight didn't respect filter originally
+- didn't understand the need to exclude first
+- issue where the filter wasn't being passed between environments, it was working first and then didn't
+- had to intervene for filtering logic, couldn't understand the recursive matching didn't handle the case where there was not source url to match against
