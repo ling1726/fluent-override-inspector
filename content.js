@@ -38,12 +38,12 @@ function hasMatchingSourceURL(sequence, sourceFilter, excludeFilter) {
     return false;
   }
   
-  // Check if any URL matches the exclude filter
+  // Check if all URLs match the exclude filter
   if (excludeFilter) {
-    const hasExcludedURL = sourceURLs.some(url => 
+    const allUrlsExcluded = sourceURLs.every(url => 
       url.toLowerCase().includes(excludeFilter.toLowerCase())
     );
-    if (hasExcludedURL) {
+    if (allUrlsExcluded) {
       return false;
     }
   }
