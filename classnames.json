@@ -1,0 +1,249 @@
+{
+  "Avatar": {
+    "root": "fui-Avatar",
+    "image": "fui-Avatar__image",
+    "initials": "fui-Avatar__initials",
+    "icon": "fui-Avatar__icon",
+    "badge": "fui-Avatar__badge"
+  },
+  "Badge": {
+    "root": "fui-Badge",
+    "icon": "fui-Badge__icon"
+  },
+  "Button": {
+    "root": "fui-Button",
+    "icon": "fui-Button__icon"
+  },
+  "Card": {
+    "root": "fui-Card",
+    "floatingAction": "fui-Card__floatingAction",
+    "checkbox": "fui-Card__checkbox"
+  },
+  "CardFooter": {
+    "root": "fui-CardFooter",
+    "action": "fui-CardFooter__action"
+  },
+  "CardHeader": {
+    "root": "fui-CardHeader",
+    "image": "fui-CardHeader__image",
+    "header": "fui-CardHeader__header",
+    "description": "fui-CardHeader__description",
+    "action": "fui-CardHeader__action"
+  },
+  "CardPreview": {
+    "root": "fui-CardPreview",
+    "logo": "fui-CardPreview__logo"
+  },
+  "Checkbox": {
+    "root": "fui-Checkbox",
+    "label": "fui-Checkbox__label",
+    "input": "fui-Checkbox__input",
+    "indicator": "fui-Checkbox__indicator"
+  },
+  "Drawer": {
+    "root": "fui-Drawer"
+  },
+  "Field": {
+    "root": "fui-Field",
+    "label": "fui-Field__label",
+    "validationMessage": "fui-Field__validationMessage",
+    "validationMessageIcon": "fui-Field__validationMessageIcon",
+    "hint": "fui-Field__hint"
+  },
+  "Input": {
+    "root": "fui-Input",
+    "input": "fui-Input__input",
+    "contentBefore": "fui-Input__contentBefore",
+    "contentAfter": "fui-Input__contentAfter"
+  },
+  "Label": {
+    "root": "fui-Label",
+    "required": "fui-Label__required"
+  },
+  "Link": {
+    "root": "fui-Link"
+  },
+  "MenuButton": {
+    "root": "fui-MenuButton",
+    "icon": "fui-MenuButton__icon",
+    "menuIcon": "fui-MenuButton__menuIcon"
+  },
+  "MenuDivider": {
+    "root": "fui-MenuDivider"
+  },
+  "MenuGroup": {
+    "root": "fui-MenuGroup"
+  },
+  "MenuGroupHeader": {
+    "root": "fui-MenuGroupHeader"
+  },
+  "MenuItem": {
+    "root": "fui-MenuItem",
+    "icon": "fui-MenuItem__icon",
+    "checkmark": "fui-MenuItem__checkmark",
+    "submenuIndicator": "fui-MenuItem__submenuIndicator",
+    "content": "fui-MenuItem__content",
+    "secondaryContent": "fui-MenuItem__secondaryContent",
+    "subText": "fui-MenuItem__subText"
+  },
+  "MenuItemCheckbox": {
+    "root": "fui-MenuItemCheckbox",
+    "icon": "fui-MenuItemCheckbox__icon",
+    "checkmark": "fui-MenuItemCheckbox__checkmark",
+    "content": "fui-MenuItemCheckbox__content",
+    "secondaryContent": "fui-MenuItemCheckbox__secondaryContent",
+    "subText": "fui-MenuItemCheckbox__subText"
+  },
+  "MenuItemLink": {
+    "root": "fui-MenuItemLink",
+    "icon": "fui-MenuItemLink__icon",
+    "checkmark": "fui-MenuItemLink__checkmark",
+    "content": "fui-MenuItemLink__content",
+    "secondaryContent": "fui-MenuItemLink__secondaryContent"
+  },
+  "MenuItemRadio": {
+    "root": "fui-MenuItemRadio",
+    "icon": "fui-MenuItemRadio__icon",
+    "checkmark": "fui-MenuItemRadio__checkmark",
+    "content": "fui-MenuItemRadio__content",
+    "secondaryContent": "fui-MenuItemRadio__secondaryContent",
+    "subText": "fui-MenuItemRadio__subText"
+  },
+  "MenuItemSwitch": {
+    "root": "fui-MenuItemSwitch",
+    "icon": "fui-MenuItemSwitch__icon",
+    "content": "fui-MenuItemSwitch__content",
+    "secondaryContent": "fui-MenuItemSwitch__secondaryContent",
+    "switchIndicator": "fui-MenuItemSwitch__switchIndicator",
+    "subText": "fui-MenuItemSwitch__subText"
+  },
+  "MenuList": {
+    "root": "fui-MenuList"
+  },
+  "MenuPopover": {
+    "root": "fui-MenuPopover"
+  },
+  "MenuSplitGroup": {
+    "root": "fui-MenuSplitGroup"
+  },
+  "MessageBar": {
+    "root": "fui-MessageBar",
+    "icon": "fui-MessageBar__icon",
+    "bottomReflowSpacer": "fui-MessageBar__bottomReflowSpacer"
+  },
+  "Radio": {
+    "root": "fui-Radio",
+    "indicator": "fui-Radio__indicator",
+    "input": "fui-Radio__input",
+    "label": "fui-Radio__label"
+  },
+  "Select": {
+    "root": "fui-Select",
+    "select": "fui-Select__select",
+    "icon": "fui-Select__icon"
+  },
+  "Slider": {
+    "root": "fui-Slider",
+    "rail": "fui-Slider__rail",
+    "thumb": "fui-Slider__thumb",
+    "input": "fui-Slider__input"
+  },
+  "SpinButton": {
+    "root": "fui-SpinButton",
+    "input": "fui-SpinButton__input",
+    "incrementButton": "fui-SpinButton__incrementButton",
+    "decrementButton": "fui-SpinButton__decrementButton"
+  },
+  "SplitButton": {
+    "root": "fui-SplitButton",
+    "menuButton": "fui-SplitButton__menuButton",
+    "primaryActionButton": "fui-SplitButton__primaryActionButton"
+  },
+  "Switch": {
+    "root": "fui-Switch",
+    "indicator": "fui-Switch__indicator",
+    "input": "fui-Switch__input",
+    "label": "fui-Switch__label"
+  },
+  "Table": {
+    "root": "fui-Table"
+  },
+  "TableBody": {
+    "root": "fui-TableBody"
+  },
+  "TableCell": {
+    "root": "fui-TableCell"
+  },
+  "TableCellActions": {
+    "root": "fui-TableCellActions"
+  },
+  "TableHeader": {
+    "root": "fui-TableHeader"
+  },
+  "TableHeaderCell": {
+    "root": "fui-TableHeaderCell",
+    "button": "fui-TableHeaderCell__button",
+    "sortIcon": "fui-TableHeaderCell__sortIcon",
+    "aside": "fui-TableHeaderCell__aside"
+  },
+  "TableResizeHandle": {
+    "root": "fui-TableResizeHandle"
+  },
+  "TableRow": {
+    "root": "fui-TableRow"
+  },
+  "TableSelectionCell": {
+    "root": "fui-TableSelectionCell",
+    "checkboxIndicator": "fui-TableSelectionCell__checkboxIndicator",
+    "radioIndicator": "fui-TableSelectionCell__radioIndicator"
+  },
+  "Text": {
+    "root": "fui-Text"
+  },
+  "ToggleButton": {
+    "root": "fui-ToggleButton",
+    "icon": "fui-ToggleButton__icon"
+  },
+  "Tooltip": {
+    "content": "fui-Tooltip__content"
+  },
+  "Tree": {
+    "root": "fui-Tree"
+  },
+  "TreeItem": {
+    "root": "fui-TreeItem"
+  },
+  "TreeItemLayout": {
+    "root": "fui-TreeItemLayout",
+    "iconBefore": "fui-TreeItemLayout__iconBefore",
+    "main": "fui-TreeItemLayout__main",
+    "iconAfter": "fui-TreeItemLayout__iconAfter",
+    "expandIcon": "fui-TreeItemLayout__expandIcon",
+    "aside": "fui-TreeItemLayout__aside",
+    "actions": "fui-TreeItemLayout__actions",
+    "selector": "fui-TreeItemLayout__selector"
+  },
+  "TreeItemPersonaLayout": {
+    "root": "fui-TreeItemPersonaLayout",
+    "media": "fui-TreeItemPersonaLayout__media",
+    "description": "fui-TreeItemPersonaLayout__description",
+    "main": "fui-TreeItemPersonaLayout__main",
+    "expandIcon": "fui-TreeItemPersonaLayout__expandIcon",
+    "aside": "fui-TreeItemPersonaLayout__aside",
+    "actions": "fui-TreeItemPersonaLayout__actions",
+    "selector": "fui-TreeItemPersonaLayout__selector"
+  },
+  "Virtualizer": {
+    "before": "fui-Virtualizer__before",
+    "beforeContainer": "fui-Virtualizer__beforeContainer",
+    "after": "fui-Virtualizer__after",
+    "afterContainer": "fui-Virtualizer__afterContainer"
+  },
+  "VirtualizerScrollView": {
+    "before": "fui-Virtualizer__before",
+    "beforeContainer": "fui-Virtualizer__beforeContainer",
+    "after": "fui-Virtualizer__after",
+    "afterContainer": "fui-Virtualizer__afterContainer",
+    "container": "fui-Virtualizer-Scroll-View__container"
+  }
+} 
