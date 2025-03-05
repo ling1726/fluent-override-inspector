@@ -60,7 +60,7 @@ function hasMatchingSourceURL(sequence, sourceFilter, excludeFilter) {
 }
 
 // Function to find Griffel elements
-function findGriffelElements(sourceFilter, excludeFilter) {
+function findGriffelElements(sourceFilter, excludeFilter, selectedComponent) {
   try {
     const griffelElements = [];
     
@@ -87,7 +87,10 @@ function findGriffelElements(sourceFilter, excludeFilter) {
           // Check if any sequence in the tree has a matching source URL
           const hasMatchingSource = hasMatchingSourceURL(info, sourceFilter, excludeFilter);
           
-          if (hasMatchingSource) {
+          // Check if the element matches the selected component
+          const matchesComponent = !selectedComponent || element.className.includes(`fui-${selectedComponent}`);
+          
+          if (hasMatchingSource && matchesComponent) {
             // Add a data attribute to identify this element
             const index = griffelElements.length;
             element.setAttribute('data-griffel-index', index.toString());
@@ -196,7 +199,7 @@ function initializeHighlightStyles() {
 }
 
 // Function to highlight Griffel elements
-function highlightGriffelElements(sourceFilter, excludeFilter) {
+function highlightGriffelElements(sourceFilter, excludeFilter, selectedComponent) {
   try {
     // Initialize styles if this is the first highlight operation
     initializeHighlightStyles();
@@ -224,7 +227,8 @@ function highlightGriffelElements(sourceFilter, excludeFilter) {
           if (info) {
             // Only highlight if it matches the source filter
             const hasMatchingSource = hasMatchingSourceURL(info, sourceFilter, excludeFilter);
-            if (hasMatchingSource) {
+            const hasMatchingComponent = !selectedComponent || element.className.includes(`fui-${selectedComponent}`);
+            if (hasMatchingSource && hasMatchingComponent) {
               element.setAttribute('data-griffel-highlight', 'all');
               highlightedCount++;
             }
@@ -309,17 +313,17 @@ window.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'GRIFFEL_INSPECTOR_REQUEST') {
     try {
       const { data } = event.data;
-      const { action, sourceFilter, excludeFilter, elementIndex } = data;
+      const { action, sourceFilter, excludeFilter, elementIndex, selectedComponent } = data;
       
       if (action === 'findGriffelElements') {
-        const elements = findGriffelElements(sourceFilter, excludeFilter);
+        const elements = findGriffelElements(sourceFilter, excludeFilter, selectedComponent);
         // Send response back to the isolated world
         window.postMessage({
           type: 'GRIFFEL_INSPECTOR_RESPONSE',
           data: { elements }
         }, '*');
       } else if (action === 'highlightGriffelElements') {
-        const success = highlightGriffelElements(sourceFilter, excludeFilter);
+        const success = highlightGriffelElements(sourceFilter, excludeFilter, selectedComponent);
         window.postMessage({
           type: 'GRIFFEL_INSPECTOR_RESPONSE',
           data: { success, isActive: isHighlightAllActive }

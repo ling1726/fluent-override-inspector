@@ -5,9 +5,32 @@ document.addEventListener('DOMContentLoaded', function () {
   const highlightButton = document.getElementById('highlightGriffel');
   const sourceFilterInput = document.getElementById('sourceFilter');
   const excludeFilterInput = document.getElementById('excludeFilter');
+  const componentSelect = document.getElementById('componentSelect');
   const statusDiv = document.getElementById('status');
   const scanInfoDiv = document.getElementById('scanInfo');
   const griffelListDiv = document.getElementById('griffelList');
+
+  // Load Fluent UI components
+  fetch(chrome.runtime.getURL('classnames.json'))
+    .then(response => response.json())
+    .then(classNames => {
+      const components = Object.keys(classNames);
+      components.forEach(component => {
+        const option = document.createElement('option');
+        option.value = component;
+        option.textContent = component;
+        componentSelect.appendChild(option);
+      });
+
+      chrome.storage.local.get('selectedComponent', function (data) {
+        if (data.selectedComponent) {
+          componentSelect.value = data.selectedComponent;
+        }
+      });
+    })
+    .catch(error => {
+      console.error('Error loading Fluent UI components:', error);
+    });
 
   // Load existing data
   chrome.storage.local.get([
@@ -15,7 +38,8 @@ document.addEventListener('DOMContentLoaded', function () {
     'lastScan',
     'sourceFilter',
     'excludeFilter',
-    'highlightedElementIndex'
+    'highlightedElementIndex',
+    'selectedComponent'
   ], function (data) {
     console.log('Loaded storage data:', data);
     
@@ -45,6 +69,11 @@ document.addEventListener('DOMContentLoaded', function () {
     chrome.storage.local.set({ excludeFilter: excludeFilterInput.value });
   });
 
+  // Save selected component when it changes
+  componentSelect.addEventListener('change', function() {
+    chrome.storage.local.set({ selectedComponent: componentSelect.value });
+  });
+
   scanButton.addEventListener('click', function () {
     console.log('Scan button clicked');
     scanButton.disabled = true;
@@ -65,8 +94,9 @@ document.addEventListener('DOMContentLoaded', function () {
       const activeTab = tabs[0];
       const sourceFilter = sourceFilterInput.value.trim();
       const excludeFilter = excludeFilterInput.value.trim();
+      const selectedComponent = componentSelect.value;
 
-      console.log('Sending message to content script with filters:', { sourceFilter, excludeFilter });
+      console.log('Sending message to content script with filters:', { sourceFilter, excludeFilter, selectedComponent });
 
       chrome.tabs.sendMessage(activeTab.id, {
         action: 'clearAllHighlights'
@@ -76,7 +106,8 @@ document.addEventListener('DOMContentLoaded', function () {
       chrome.tabs.sendMessage(activeTab.id, {
         action: 'findGriffelElements',
         sourceFilter: sourceFilter,
-        excludeFilter: excludeFilter
+        excludeFilter: excludeFilter,
+        selectedComponent: selectedComponent
       }, function (response) {
         console.log('Received response from content script:', response);
         scanButton.disabled = false;
@@ -89,13 +120,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (response && response.elements) {
           console.log('Found elements:', response.elements);
-          displayGriffelElements(response.elements); // No highlightedIndex passed, so all buttons will be "Highlight"
+          displayGriffelElements(response.elements);
           chrome.storage.local.set({
             currentPageGriffelElements: response.elements,
             lastScan: new Date().toISOString()
           });
           scanInfoDiv.textContent = `Last scan: ${new Date().toLocaleString()}`;
-          showStatus(`Found ${response.elements.length} Griffel elements${getFilterStatus(sourceFilter, excludeFilter)}`, 'success');
+          showStatus(`Found ${response.elements.length} Griffel elements${getFilterStatus(sourceFilter, excludeFilter, selectedComponent)}`, 'success');
         } else if (response && response.error) {
           console.error('Error from content script:', response.error);
           showStatus(`Error: ${response.error}`, 'error');
@@ -125,12 +156,14 @@ document.addEventListener('DOMContentLoaded', function () {
       const activeTab = tabs[0];
       const sourceFilter = sourceFilterInput.value.trim();
       const excludeFilter = excludeFilterInput.value.trim();
+      const selectedComponent = componentSelect.value;
 
       // Send message to content script
       chrome.tabs.sendMessage(activeTab.id, {
         action: 'highlightGriffelElements',
         sourceFilter: sourceFilter,
-        excludeFilter: excludeFilter
+        excludeFilter: excludeFilter,
+        selectedComponent: selectedComponent
       }, function (response) {
         highlightButton.disabled = false;
 
@@ -148,13 +181,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  function getFilterStatus(sourceFilter, excludeFilter) {
+  function getFilterStatus(sourceFilter, excludeFilter, selectedComponent) {
     const parts = [];
     if (sourceFilter) {
       parts.push(`matching "${sourceFilter}"`);
     }
     if (excludeFilter) {
       parts.push(`excluding "${excludeFilter}"`);
+    }
+    if (selectedComponent) {
+      parts.push(`component "${selectedComponent}"`);
     }
     return parts.length > 0 ? ` (${parts.join(', ')})` : '';
   }

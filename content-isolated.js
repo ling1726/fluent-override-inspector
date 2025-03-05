@@ -6,7 +6,8 @@ function performInitialScan() {
     data: {
       action: 'findGriffelElements',
       sourceFilter: '',
-      excludeFilter: ''
+      excludeFilter: '',
+      selectedComponent: ''
     }
   }, '*');
   
@@ -33,8 +34,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       type: 'GRIFFEL_INSPECTOR_REQUEST',
       data: {
         action: 'findGriffelElements',
-        sourceFilter: request.sourceFilter || '',
-        excludeFilter: request.excludeFilter || ''
+        sourceFilter: request.sourceFilter,
+        excludeFilter: request.excludeFilter,
+        selectedComponent: request.selectedComponent
       }
     }, '*');
     
@@ -55,7 +57,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       data: {
         action: 'highlightGriffelElements',
         sourceFilter: request.sourceFilter || '',
-        excludeFilter: request.excludeFilter || ''
+        excludeFilter: request.excludeFilter || '',
+        selectedComponent: request.selectedComponent || ''
       }
     }, '*');
     sendResponse({ success: true });
