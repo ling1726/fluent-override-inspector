@@ -270,9 +270,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const elementInfo = document.createElement('div');
       elementInfo.textContent = `Element ${index + 1}: ${element.element.tagName.toLowerCase()}`;
-      if (element.element.id) {
-        elementInfo.textContent += ` (ID: ${element.element.id})`;
-      }
 
       // Add highlight button
       const highlightButton = document.createElement('button');
