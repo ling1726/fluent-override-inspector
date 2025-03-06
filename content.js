@@ -73,8 +73,10 @@ function findGriffelElements(sourceFilter, excludeFilter, selectedComponent) {
       el.removeAttribute('data-griffel-index');
     });
 
-    // Get all elements that can be inspected with Griffel devtools
-    const elements = document.querySelectorAll('*');
+    // Get elements based on component filter if provided, otherwise get all elements
+    const elements = selectedComponent 
+      ? document.querySelectorAll(`[class*="fui-${selectedComponent}"]`)
+      : document.querySelectorAll('*');
     
     elements.forEach(element => {
       try {
@@ -85,10 +87,7 @@ function findGriffelElements(sourceFilter, excludeFilter, selectedComponent) {
           // Check if any sequence in the tree has a matching source URL
           const hasMatchingSource = hasMatchingSourceURL(info, sourceFilter, excludeFilter);
           
-          // Check if the element matches the selected component
-          const matchesComponent = !selectedComponent || element.className.includes(`fui-${selectedComponent}`);
-          
-          if (hasMatchingSource && matchesComponent) {
+          if (hasMatchingSource) {
             // Add a data attribute to identify this element
             const index = griffelElements.length;
             element.setAttribute('data-griffel-index', index.toString());

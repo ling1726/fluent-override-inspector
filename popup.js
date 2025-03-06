@@ -263,6 +263,11 @@ document.addEventListener('DOMContentLoaded', function () {
       const itemDiv = document.createElement('div');
       itemDiv.className = 'griffel-item';
 
+      // Filter classes to only include those starting with 'fui-'
+      const fuiClasses = element.element.className.split(' ')
+        .filter(className => className.startsWith('fui-'))
+        .join(' ');
+
       const elementInfo = document.createElement('div');
       elementInfo.textContent = `Element ${index + 1}: ${element.element.tagName.toLowerCase()}`;
       if (element.element.id) {
@@ -314,12 +319,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // Display Griffel-specific attributes
       const attributes = [];
       if (element.attributes.class) {
-        attributes.push(`Class: ${element.attributes.class}`);
-      }
-      if (element.attributes.dataAttributes.length > 0) {
-        attributes.push('Data attributes: ' + element.attributes.dataAttributes
-          .map(attr => `${attr.name}: ${attr.value}`)
-          .join(', '));
+        attributes.push(`Class: ${fuiClasses}`);
       }
 
       attributesDiv.textContent = attributes.join(' | ');
