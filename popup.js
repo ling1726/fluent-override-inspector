@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const scanButton = document.getElementById('scanGriffel');
   const highlightButton = document.getElementById('highlightGriffel');
+  const clearHighlightsButton = document.getElementById('clearHighlights');
   const sourceFilterInput = document.getElementById('sourceFilter');
   const excludeFilterInput = document.getElementById('excludeFilter');
   const componentSelect = document.getElementById('componentSelect');
@@ -42,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
     'selectedComponent'
   ], function (data) {
     console.log('Loaded storage data:', data);
-    
+
     // Restore filter values
     if (data.sourceFilter) {
       sourceFilterInput.value = data.sourceFilter;
@@ -50,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (data.excludeFilter) {
       excludeFilterInput.value = data.excludeFilter;
     }
-    
+
     // Restore scan results
     if (data.currentPageGriffelElements) {
       displayGriffelElements(data.currentPageGriffelElements, data.highlightedElementIndex);
@@ -61,16 +62,16 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Save filter values when they change
-  sourceFilterInput.addEventListener('input', function() {
+  sourceFilterInput.addEventListener('input', function () {
     chrome.storage.local.set({ sourceFilter: sourceFilterInput.value });
   });
 
-  excludeFilterInput.addEventListener('input', function() {
+  excludeFilterInput.addEventListener('input', function () {
     chrome.storage.local.set({ excludeFilter: excludeFilterInput.value });
   });
 
   // Save selected component when it changes
-  componentSelect.addEventListener('change', function() {
+  componentSelect.addEventListener('change', function () {
     chrome.storage.local.set({ selectedComponent: componentSelect.value });
   });
 
@@ -100,41 +101,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
       chrome.tabs.sendMessage(activeTab.id, {
         action: 'clearAllHighlights'
+      }, function () {
+        chrome.tabs.sendMessage(activeTab.id, {
+          action: 'findGriffelElements',
+          sourceFilter: sourceFilter,
+          excludeFilter: excludeFilter,
+          selectedComponent: selectedComponent
+        }, function (response) {
+          console.log('Received response from content script:', response);
+          scanButton.disabled = false;
+
+          if (chrome.runtime.lastError) {
+            console.error('Chrome runtime error:', chrome.runtime.lastError);
+            showStatus('Error: Could not connect to the page. Make sure you are on a valid webpage.', 'error');
+            return;
+          }
+
+          if (response && response.elements) {
+            console.log('Found elements:', response.elements);
+            displayGriffelElements(response.elements);
+            chrome.storage.local.set({
+              currentPageGriffelElements: response.elements,
+              lastScan: new Date().toISOString()
+            });
+            scanInfoDiv.textContent = `Last scan: ${new Date().toLocaleString()}`;
+            showStatus(`Found ${response.elements.length} Griffel elements${getFilterStatus(sourceFilter, excludeFilter, selectedComponent)}`, 'success');
+          } else if (response && response.error) {
+            console.error('Error from content script:', response.error);
+            showStatus(`Error: ${response.error}`, 'error');
+          } else {
+            console.log('No elements found');
+            showStatus('No Griffel elements found. Make sure you are on a page that uses Griffel.', 'error');
+          }
+        });
       });
 
       // Send message to content script
-      chrome.tabs.sendMessage(activeTab.id, {
-        action: 'findGriffelElements',
-        sourceFilter: sourceFilter,
-        excludeFilter: excludeFilter,
-        selectedComponent: selectedComponent
-      }, function (response) {
-        console.log('Received response from content script:', response);
-        scanButton.disabled = false;
 
-        if (chrome.runtime.lastError) {
-          console.error('Chrome runtime error:', chrome.runtime.lastError);
-          showStatus('Error: Could not connect to the page. Make sure you are on a valid webpage.', 'error');
-          return;
-        }
-
-        if (response && response.elements) {
-          console.log('Found elements:', response.elements);
-          displayGriffelElements(response.elements);
-          chrome.storage.local.set({
-            currentPageGriffelElements: response.elements,
-            lastScan: new Date().toISOString()
-          });
-          scanInfoDiv.textContent = `Last scan: ${new Date().toLocaleString()}`;
-          showStatus(`Found ${response.elements.length} Griffel elements${getFilterStatus(sourceFilter, excludeFilter, selectedComponent)}`, 'success');
-        } else if (response && response.error) {
-          console.error('Error from content script:', response.error);
-          showStatus(`Error: ${response.error}`, 'error');
-        } else {
-          console.log('No elements found');
-          showStatus('No Griffel elements found. Make sure you are on a page that uses Griffel.', 'error');
-        }
-      });
     });
   });
 
@@ -143,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
     showStatus('Highlighting Griffel elements...', 'info');
 
     // Toggle button text immediately
-    highlightButton.textContent = highlightButton.textContent === 'Highlight All' ? 'Unhighlight All' : 'Highlight All';
+    highlightButton.textContent = 'Highlight All';
 
     // Get the active tab
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -173,10 +176,53 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (response && response.success) {
-          showStatus(`Griffel elements${getFilterStatus(sourceFilter, excludeFilter)} highlighted on the page`, 'success');
+          showStatus(`Griffel elements${getFilterStatus(sourceFilter, excludeFilter, selectedComponent)} highlighted on the page`, 'success');
         } else {
           showStatus('Error highlighting Griffel elements', 'error');
         }
+      });
+    });
+  });
+
+  // Add clear highlights button handler
+  clearHighlightsButton.addEventListener('click', function () {
+    clearHighlightsButton.disabled = true;
+    showStatus('Clearing highlights...', 'info');
+
+    // Get the active tab
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      if (!tabs[0]) {
+        showStatus('No active tab found', 'error');
+        clearHighlightsButton.disabled = false;
+        return;
+      }
+
+      const activeTab = tabs[0];
+
+      // Reset highlight button text
+      highlightButton.textContent = 'Highlight All';
+
+      // Send message to content script
+      chrome.tabs.sendMessage(activeTab.id, {
+        action: 'clearAllHighlights'
+      }, function (response) {
+        clearHighlightsButton.disabled = false;
+
+        if (chrome.runtime.lastError) {
+          showStatus('Error: Could not connect to the page. Make sure you are on a valid webpage.', 'error');
+          return;
+        }
+
+        // Clear highlighted index from storage
+        chrome.storage.local.set({ highlightedElementIndex: null });
+
+        // Update any highlighted buttons in the list
+        const highlightButtons = document.querySelectorAll('.griffel-item button');
+        highlightButtons.forEach(btn => {
+          btn.textContent = 'Highlight';
+        });
+
+        showStatus('All highlights cleared', 'success');
       });
     });
   });
@@ -225,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Add highlight button
       const highlightButton = document.createElement('button');
-      highlightButton.textContent = highlightedIndex === index ? 'Unhighlight' : 'Highlight';
+      highlightButton.textContent = 'Highlight';
       highlightButton.style.marginLeft = '8px';
       highlightButton.style.padding = '2px 8px';
       highlightButton.style.fontSize = '0.8em';
@@ -247,21 +293,8 @@ document.addEventListener('DOMContentLoaded', function () {
           if (!tabs[0]) return;
 
           // Toggle button text immediately
-          highlightButton.textContent = highlightButton.textContent === 'Highlight' ? 'Unhighlight' : 'Highlight';
-
-          // If this button is being highlighted, untoggle all other buttons
-          if (highlightButton.textContent === 'Unhighlight') {
-            highlightButtons.forEach(btn => {
-              if (btn !== highlightButton && btn.textContent === 'Unhighlight') {
-                btn.textContent = 'Highlight';
-              }
-            });
-            // Save the highlighted index
-            chrome.storage.local.set({ highlightedElementIndex: index });
-          } else {
-            // Clear the highlighted index
-            chrome.storage.local.set({ highlightedElementIndex: null });
-          }
+          highlightButton.textContent = 'Highlight';
+          chrome.storage.local.set({ highlightedElementIndex: index });
 
           // Send message to content script through the isolated world
           chrome.tabs.sendMessage(tabs[0].id, {

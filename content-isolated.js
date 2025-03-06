@@ -81,6 +81,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       type: 'GRIFFEL_INSPECTOR_REQUEST',
       data: { action: 'clearAllHighlights' }
     }, '*');
+    
+    // Set up a one-time listener for the response
+    const messageHandler = (event) => {
+      if (event.data && event.data.type === 'GRIFFEL_INSPECTOR_RESPONSE') {
+        window.removeEventListener('message', messageHandler);
+        sendResponse({ success: true });
+      }
+    };
+    
+    window.addEventListener('message', messageHandler);
+    return true; // Keep the message channel open for async response
   }
 });
 

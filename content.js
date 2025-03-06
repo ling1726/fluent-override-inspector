@@ -336,6 +336,10 @@ window.addEventListener('message', (event) => {
         }, '*');
       } else if (action === 'clearAllHighlights') {
         clearAllHighlights();
+        window.postMessage({
+          type: 'GRIFFEL_INSPECTOR_RESPONSE',
+          data: { success: true }
+        }, '*');
       }
     } catch (error) {
       console.error('Error handling Griffel inspector request:', error);
