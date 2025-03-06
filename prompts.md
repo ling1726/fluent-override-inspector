@@ -1,4 +1,4 @@
-# Griffel Element Inspector Development Prompts
+# Fluent Override Inspector Development Prompts
 
 ## Initial Setup and Development
 **Prompt**: "Great boilerplate generate to get initial working extension"

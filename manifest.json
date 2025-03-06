@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Griffel Element Inspector",
+  "name": "Fluent Override Inspector",
   "version": "1.0",
   "description": "A Chrome extension for inspecting Griffel elements on web pages",
   "permissions": ["storage", "activeTab"],
