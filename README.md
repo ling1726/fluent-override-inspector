@@ -1,3 +1,5 @@
+> This is an hack project built using AI thanks to  [Cursor](https://www.cursor.com/)
+
 # Redlines Chrome Extension
 
 A Chrome extension for tracking and managing changes across web pages.
