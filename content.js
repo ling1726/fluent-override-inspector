@@ -73,10 +73,8 @@ function findGriffelElements(sourceFilter, excludeFilter, selectedComponent) {
       el.removeAttribute('data-griffel-index');
     });
 
-    // Get elements based on component filter if provided, otherwise get all elements
-    const elements = selectedComponent 
-      ? document.querySelectorAll(`[class*="fui-${selectedComponent}"]`)
-      : document.querySelectorAll('*');
+    // Get all elements that can be inspected with Griffel devtools
+    const elements = document.querySelectorAll('*');
     
     elements.forEach(element => {
       try {
@@ -87,7 +85,10 @@ function findGriffelElements(sourceFilter, excludeFilter, selectedComponent) {
           // Check if any sequence in the tree has a matching source URL
           const hasMatchingSource = hasMatchingSourceURL(info, sourceFilter, excludeFilter);
           
-          if (hasMatchingSource) {
+          // Check if the element matches the selected component
+          const matchesComponent = !selectedComponent || element.className.includes(`fui-${selectedComponent}`);
+          
+          if (hasMatchingSource && matchesComponent) {
             // Add a data attribute to identify this element
             const index = griffelElements.length;
             element.setAttribute('data-griffel-index', index.toString());
@@ -141,14 +142,14 @@ function initializeHighlightStyles() {
       }
       /* Individual element highlight takes precedence */
       [data-griffel-highlight="single"] {
-        outline: 2px solid purple !important;
+        outline: 2px solid cyan !important;
         outline-offset: 2px !important;
         position: relative;
         z-index: 10002;
       }
       /* Combined highlight styles */
       [data-griffel-highlight="all"][data-griffel-highlight="single"] {
-        outline: 2px solid purple !important;
+        outline: 2px solid cyan !important;
         outline-offset: 2px !important;
         position: relative;
         z-index: 10002;
@@ -158,8 +159,8 @@ function initializeHighlightStyles() {
         position: absolute;
         top: -20px;
         left: 0;
-        background: purple;
-        color: white;
+        background: cyan;
+        color: black;
         padding: 2px 4px;
         font-size: 12px;
         border-radius: 2px;
@@ -191,11 +192,8 @@ function highlightGriffelElements(sourceFilter, excludeFilter, selectedComponent
 
     let highlightedCount = 0;
 
-    // Get elements based on component filter if provided, otherwise get all elements
-    const elements = selectedComponent 
-      ? document.querySelectorAll(`[class*="fui-${selectedComponent}"]`)
-      : document.querySelectorAll('*');
-
+    // Find and highlight Griffel elements
+    const elements = document.querySelectorAll('*');
     elements.forEach(element => {
       try {
         if (window.__GRIFFEL_DEVTOOLS__) {
@@ -203,7 +201,8 @@ function highlightGriffelElements(sourceFilter, excludeFilter, selectedComponent
           if (info) {
             // Only highlight if it matches the source filter
             const hasMatchingSource = hasMatchingSourceURL(info, sourceFilter, excludeFilter);
-            if (hasMatchingSource) {
+            const hasMatchingComponent = !selectedComponent || element.className.includes(`fui-${selectedComponent}`);
+            if (hasMatchingSource && hasMatchingComponent) {
               element.setAttribute('data-griffel-highlight', 'all');
               highlightedCount++;
             }
