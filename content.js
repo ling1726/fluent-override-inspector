@@ -12,9 +12,7 @@ function collectSourceURLs(sequence) {
   // Collect URLs from children
   if (sequence.children) {
     sequence.children.forEach(child => {
-      if (child.sourceURL) {
-        urls.push(...collectSourceURLs(child));
-      }
+      urls.push(...collectSourceURLs(child));
     });
   }
   
@@ -142,36 +140,12 @@ function initializeHighlightStyles() {
         position: relative;
         z-index: 10000;
       }
-      [data-griffel-highlight="all"]::before {
-        content: 'Griffel';
-        position: absolute;
-        top: -20px;
-        left: 0;
-        background: red;
-        color: white;
-        padding: 2px 4px;
-        font-size: 12px;
-        border-radius: 2px;
-        z-index: 10001;
-      }
       /* Individual element highlight takes precedence */
       [data-griffel-highlight="single"] {
         outline: 2px solid purple !important;
         outline-offset: 2px !important;
         position: relative;
         z-index: 10002;
-      }
-      [data-griffel-highlight="single"]::before {
-        content: attr(data-griffel-label);
-        position: absolute;
-        top: -20px;
-        left: 0;
-        background: purple;
-        color: white;
-        padding: 2px 4px;
-        font-size: 12px;
-        border-radius: 2px;
-        z-index: 10003;
       }
       /* Combined highlight styles */
       [data-griffel-highlight="all"][data-griffel-highlight="single"] {
